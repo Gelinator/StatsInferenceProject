@@ -1,7 +1,8 @@
 ---
 title: "Study of the relationship between Tooth Growth and Vitamin C in Guinea Pigs"
 output:
- word_document: 
+  html_document: default
+  word_document:
     fig_height: 4.5
     fig_width: 6
 ---
@@ -26,47 +27,33 @@ It contains 60 observations, 10 for each combination of *dose* and *supp*.
 
 #Exploratory Data Analysis
 
-The following graphs and metrics aim at observing certain patterns between variables to propose relevant hypothesis testing.
+The following graphs aim at observing certain patterns between variables to propose relevant hypothesis testing.
 
-##Metrics
-```{r Exploratory Data, echo=FALSE}
-#Exploration of potential relationships between variables
-OverallLenDose <- cor(ToothGrowth$len,ToothGrowth$dose)
-
-OJ <- subset(ToothGrowth,ToothGrowth$supp =="OJ")
-VC <- subset(ToothGrowth,ToothGrowth$supp =="VC")
-
-OJLenDose <- cor(OJ$len,OJ$dose)
-VCLenDose <- cor(VC$len,VC$dose)
-```
-
-In a first instance, the linear relationship between tooth growth in guinea pigs and the dose of ascorbic acid appears to be strong, with a correlation of `r round(OverallLenDose,2)`. This linear relationship remains strong, and even gets stronger, within the delivery methods, with a correlation of `r round(OJLenDose,2)` and `r round(VCLenDose,2)` for orange juice and ascorbic acid respectively.
 
 ##Exploratory Graphs
-```{r Exploratory Graph 1, echo=FALSE, message=FALSE, warning=FALSE}
+```{r Exploratory Graph 1,eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 #Overall portrait of the data
 qplot(ToothGrowth$dose,ToothGrowth$len, colour=ToothGrowth$supp, ylab = "Length (µm)", xlab="Dose (mg)") + geom_smooth() + scale_colour_discrete("Delivery Method")
 ```
 
-From this graph, the overall positive aspect of the relationship between the dose and the length of the odontoblast can be fully appreciated. By it's overall look, the ascorbic acid (*VC*) data displays a stronger linearity than the orange juice (*OJ*).
+From Graph 1, the overall positive aspect of the relationship between the dose and the length of the odontoblast can be fully appreciated. By its overall look, the ascorbic acid (*VC*) data displays a stronger linearity than the orange juice (*OJ*).
 
-```{r Exploratory Graph 2, echo=FALSE, message=FALSE, warning=FALSE}
+```{r Exploratory Graph 2, eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 #Supply methods compared
 qplot(ToothGrowth$supp,ToothGrowth$len,geom="boxplot", fill=ToothGrowth$supp,ylab = "Length (µm)", xlab="Delivery Method")+ scale_fill_discrete("Delivery Method")
 ```
 
-This graph is meant to compare both delivery method and showcase any significant difference between both.
+Graph 2 is meant to compare both delivery method and showcase any significant difference between both.
 
-```{r Exploratory Graph 3, echo=FALSE, message=FALSE, warning=FALSE}
+```{r Exploratory Graph 3, eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 #Dose provided compared
 qplot(ToothGrowth$dose,ToothGrowth$len,geom="boxplot", fill=factor(ToothGrowth$dose), ylab = "Length (µm)", xlab="Dose (mg)") + scale_fill_discrete("Dose (mg)")
 ```
 
-Finally, this graph intends to portray the relationship between the growth of odontoblast in guinea pigs, with no distinction between delivery method.
+Finally, Graph 3 intends to portray the relationship between the growth of odontoblast in guinea pigs, with no distinction between delivery method.
 
 
 #Hypothesis Testing
-
 In the light of the previous exploratory graphs, two questions will be examined in this experiment, both pertaining to the link between the growth of odontoblasts in guinea pigs and ascorbic acid.
 
 1. Does the ascorbic acid delivery method impact the growth of odontoblasts?
@@ -74,23 +61,20 @@ In the light of the previous exploratory graphs, two questions will be examined 
 2. Does the growth of odontoblasts in respect of ascorbic acid is dose dependent?
 
 ```{r Alpha, echo=FALSE}
-#Setting the alpha in order to establish the confidence level
-alpha <- 0.05
+#Setting the α in order to establish the confidence level
+α <- 0.05
 ```
 
-The Alpha value selected for this experiment is `r alpha`, for a 95% confidence level.
+The α value selected for this experiment is `r α`, for a 95% confidence level.
 
 ###Supply Method
 
 ####Hypothesis Formulation and Presentation
 
-Ascorbic acid delivery generates more odontoblast growth than orange juice delivery.
-
-Ascorbic acid supply = $VC$
-Orange Juice delivery = $OJ$
+Orange juice ($OJ$) delivery generates more odontoblast growth than ascorbic acid ($VC$) delivery.
 
 * $H_0 : µ_{OJ} = µ_{VC}$
-* $H_a : µ_{OJ} < µ_{VC}$
+* $H_a : µ_{OJ} > µ_{VC}$
 
 ```{r Hypothesis 1 test, echo=FALSE}
 #Subsetting the data by delivery method
@@ -98,13 +82,13 @@ OJ <- subset(ToothGrowth,ToothGrowth$supp =="OJ")
 VC <- subset(ToothGrowth,ToothGrowth$supp =="VC")
 
 #Testing for any statistical difference between them
-Hypo1 <- t.test(OJ$len,VC$len,paired=FALSE,conf.level=1-alpha)
+Hypo1 <- t.test(OJ$len,VC$len,paired=FALSE,conf.level=1-α)
 
 #Establishing the rejection regions for the t-tests
-RejRegionHypo1 <- qt(1-alpha/2,df=Hypo1$parameter)*c(-1,1)
+RejRegionHypo1 <- qt(1-α/2,df=Hypo1$parameter)*c(-1,1)
 ```
 
-The data provided does not allow to reject the null hypothesis, as the confidence interval (`r round(Hypo1$conf.int,4)`) includes 0, suggesting that no change from the mean is possible. Furthermore, the p-value (`r round(Hypo1$p.value,4)`) suggests that there is weak evidence that $H_a$ is true, rendering the test result not statistically significant. Finally, the test statistic (`r round(Hypo1$statistic,2)`) is not part of the rejection region (`r round(RejRegionHypo1,2)`)
+The data provided does not allow to reject the null hypothesis, as the confidence interval (`r round(Hypo1$conf.int,4)`) includes 0, suggesting that no change from the mean is possible. Furthermore, the p-value (`r round(Hypo1$p.value,4)`) suggests that there is weak evidence that $H_a$ is true, rendering the test result not statistically significant. Finally, the test statistic (`r round(Hypo1$statistic,2)`) is not part of the rejection region (`r round(RejRegionHypo1,2)`).
 
 
 ###Dose of Ascorbic Acid
@@ -123,14 +107,14 @@ Dose1 <- subset(ToothGrowth,ToothGrowth$dose == 1)
 Dose2 <- subset(ToothGrowth,ToothGrowth$dose == 2)
 
 #Testing for any statistical difference between them
-Hypo2.1 <- t.test(Dose1$len,Dose0.5$len,paired=FALSE,conf.level=1-alpha)
-Hypo2.2 <- t.test(Dose2$len,Dose1$len,paired=FALSE,conf.level=1-alpha)
-Hypo2.3 <- t.test(Dose2$len,Dose0.5$len,paired=FALSE,conf.level=1-alpha)
+Hypo2.1 <- t.test(Dose1$len,Dose0.5$len,paired=FALSE,conf.level=1-α)
+Hypo2.2 <- t.test(Dose2$len,Dose1$len,paired=FALSE,conf.level=1-α)
+Hypo2.3 <- t.test(Dose2$len,Dose0.5$len,paired=FALSE,conf.level=1-α)
 
 #Establishing the rejection regions for the t-tests
-RejRegionHypo2.1 <- qt(1-alpha/2,df=Hypo2.1$parameter)*c(-1,1)
-RejRegionHypo2.2 <- qt(1-alpha/2,df=Hypo2.2$parameter)*c(-1,1)
-RejRegionHypo2.3 <- qt(1-alpha/2,df=Hypo2.3$parameter)*c(-1,1)
+RejRegionHypo2.1 <- qt(1-α/2,df=Hypo2.1$parameter)*c(-1,1)
+RejRegionHypo2.2 <- qt(1-α/2,df=Hypo2.2$parameter)*c(-1,1)
+RejRegionHypo2.3 <- qt(1-α/2,df=Hypo2.3$parameter)*c(-1,1)
 ```
 
 The data provided does allow to reject the null hypothesis in all three cases (Doses 1.0 vs 0.5, 2.0 vs 1.0 and 2.0 vs 0.5), as their respective confidence interval (`r round(Hypo2.1$conf.int,2)[1]`, `r round(Hypo2.2$conf.int,2)[1]` and `r round(Hypo2.1$conf.int,2)[1]`) do not include 0, suggesting that a difference from the mean is likely. Furthermore, the p-values ($`r signif(Hypo2.1$p.value,2)`$, $`r signif(Hypo2.2$p.value,2)`$ and $`r signif(Hypo2.3$p.value,2)`$) suggest that there is overwhelming evidence that $H_a$ is true, rendering the test result to be highly significant. Finally, all three test statistics (`r round(Hypo2.1$statistic,2)`,`r round(Hypo2.2$statistic,2)` and `r round(Hypo2.3$statistic,2)`) are part of the rejection regions of all three tests (~[-2.025;2.025] < test statistic).
@@ -156,15 +140,6 @@ The same conclusion cannot be drawn concerning the two delivery methods studied.
 ```{r Summary,eval=FALSE}
 ```
 
-```{r Summary Added}
-#Some more summaries of the data
-head(ToothGrowth)
-str(ToothGrowth)
-```
-
-```{r Exploratory Data, eval=FALSE}
-```
-
 ```{r Exploratory Graph 1, eval=FALSE, message=FALSE, warning=FALSE}
 ```
 
@@ -182,9 +157,33 @@ str(ToothGrowth)
 
 ```{r Hypothesis 2 test, eval=FALSE}
 ```
+##Graph codes
+```{r Exploratory Graph 1,eval=FALSE, message=FALSE, warning=FALSE}
+```
 
-#Annex B - Distribution Graph
+```{r Exploratory Graph 2,eval=FALSE, message=FALSE, warning=FALSE}
+```
+
+```{r Exploratory Graph 3,eval=FALSE, message=FALSE, warning=FALSE}
+```
+
+#Annex B - Graphs
+
+##Graph 1
+```{r Exploratory Graph 1, echo=FALSE, message=FALSE, warning=FALSE}
+```
+
+##Graph 2
+```{r Exploratory Graph 2, echo=FALSE, message=FALSE, warning=FALSE}
+```
+
+##Graph 3
+```{r Exploratory Graph 3, echo=FALSE, message=FALSE, warning=FALSE}
+```
+
+
+##Graph 4 - Distribution of Odontoblasts
 ```{r Graph 1, message=FALSE}
-## Graph 1 - Distribution of Odontoblast Length
+## Graph 4 - Distribution of Odontoblast Length
 ggplot(ToothGrowth, aes(x=ToothGrowth$len))+geom_histogram(aes(y = ..density.., fill=..count..),binwidth=3.5) + stat_function(fun = dnorm, colour="blue", arg = list(mean = mean(ToothGrowth$len),sd=sd(ToothGrowth$len)), geom="line", size=2) + geom_vline(aes(xintercept = mean(ToothGrowth$len),colour="red"),size=1)+ ylab("Density") + xlab("Odontoblast Length (µm)") + labs(title="Odontoblast Length Distribution")
 ```
